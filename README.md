@@ -57,21 +57,21 @@ chmod +x install-docker.sh
 ```
 ### Start all services
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Start individual services
 ```bash
-cd services/mysql && docker-compose up -d
-cd services/mongodb && docker-compose up -d
-cd services/postgres && docker-compose up -d
-cd services/redis && docker-compose up -d
-cd services/minio && docker-compose up -d
+cd services/mysql && docker compose up -d
+cd services/mongodb && docker compose up -d
+cd services/postgres && docker compose up -d
+cd services/redis && docker compose up -d
+cd services/minio && docker compose up -d
 ```
 
 ### Stop all services
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ## Service Details
