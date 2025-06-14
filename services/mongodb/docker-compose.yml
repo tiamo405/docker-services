@@ -12,7 +12,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ~/docker/data/mongodb:/data/db
+      - ~/docker-services/data/mongodb:/data/db
       - ./config:/etc/mongo
     networks:
       - mongodb-network

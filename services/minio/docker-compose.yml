@@ -12,7 +12,7 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - ~/docker/data/minio:/data
+      - ~/docker-services/data/minio:/data
       - ./config:/etc/minio
     command: server /data --console-address ":9001"
     networks:

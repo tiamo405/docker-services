@@ -13,7 +13,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ~/docker/data/mysql:/var/lib/mysql
+      - ~/docker-services/data/mysql:/var/lib/mysql
       - ./config:/etc/mysql/conf.d
     networks:
       - mysql-network

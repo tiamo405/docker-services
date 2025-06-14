@@ -35,15 +35,20 @@ docker-services/
 
 ## Data Persistence
 
-All services are configured to store data in `~/docker/data/` directory:
-- MySQL data: `~/docker/data/mysql`
-- MongoDB data: `~/docker/data/mongodb`
-- PostgreSQL data: `~/docker/data/postgres`
-- Redis data: `~/docker/data/redis`
-- MinIO data: `~/docker/data/minio`
+All services are configured to store data in `~/docker-services/data/` directory:
+- MySQL data: `~/docker-services/data/mysql`
+- MongoDB data: `~/docker-services/data/mongodb`
+- PostgreSQL data: `~/docker-services/data/postgres`
+- Redis data: `~/docker-services/data/redis`
+- MinIO data: `~/docker-services/data/minio`
 
 ## Usage
 
+###
+```bash
+mkdir ~/docker-services/
+git clone https://github.com/tiamo405/docker-services.git
+```
 ### Start all services
 ```bash
 docker-compose up -d
