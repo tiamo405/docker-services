@@ -46,8 +46,14 @@ All services are configured to store data in `~/docker-services/data/` directory
 
 ###
 ```bash
-mkdir ~/docker-services/
+cd ~/
 git clone https://github.com/tiamo405/docker-services.git
+cd ~/docker-services/
+mkdir data
+mkdir data/{mysql,mongodb,redis,postgres,minio}
+chmod +x install-docker.sh
+./install-docker.sh
+
 ```
 ### Start all services
 ```bash
