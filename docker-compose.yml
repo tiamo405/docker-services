@@ -64,7 +64,7 @@ services:
       - app-network
 
   minio:
-    image: minio/minio:latest
+    image: quay.io/minio/minio
     container_name: minio
     restart: unless-stopped
     environment:
