@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:mysql:8.0.36-debian
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: myapp
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ~/docker/data/mysql:/var/lib/mysql
+      - ./config:/etc/mysql/conf.d
+    networks:
+      - mysql-network
+
+networks:
+  mysql-network:
+    driver: bridge

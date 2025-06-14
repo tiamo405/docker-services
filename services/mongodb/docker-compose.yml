@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: myapp
+    ports:
+      - "27017:27017"
+    volumes:
+      - ~/docker/data/mongodb:/data/db
+      - ./config:/etc/mongo
+    networks:
+      - mongodb-network
+
+networks:
+  mongodb-network:
+    driver: bridge
