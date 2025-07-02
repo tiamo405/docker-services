@@ -40,7 +40,7 @@ All services are configured to store data in `~/docker-services/data/` directory
 - MongoDB data: `~/docker-services/data/mongodb`
 - PostgreSQL data: `~/docker-services/data/postgres`
 - Redis data: `~/docker-services/data/redis`
-- MinIO data: `~/docker-services/data/minio`
+- MinIO data: `~/minio/data` (separate location for MinIO)
 
 ## Usage
 
@@ -94,7 +94,10 @@ docker compose down
 
 ### Redis
 - Port: 6379
-- Persistence enabled
+- Password: Gsht.2k24!@#
+- Connection: redis://localhost:6379
+- Persistence enabled with AOF
+- Optimized for local development
 
 ### MinIO
 - Web UI: http://localhost:9001

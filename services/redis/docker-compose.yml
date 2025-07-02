@@ -9,8 +9,10 @@ services:
       - "6379:6379"
     volumes:
       - ~/docker-services/data/redis:/data
-      - ./config:/usr/local/etc/redis
-    command: redis-server --appendonly yes
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_PASSWORD=Gsht.2k24!@#
     networks:
       - redis-network
 
