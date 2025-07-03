@@ -11,8 +11,6 @@ services:
       - ~/docker-services/data/redis:/data
       - ./config/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
-    environment:
-      - REDIS_PASSWORD=Gsht.2k24!@#
     networks:
       - redis-network
 
