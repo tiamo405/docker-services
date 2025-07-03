@@ -11,3 +11,8 @@ chmod +x redis-manager.sh
 # test connection
 ./redis-manager.sh test
 ./redis-manager.sh cli
+
+# remove cache
+docker exec -it redis redis-cli -a Gsht.2k24!@#
+FLUSHALL # xóa full
+FLUSHDB # xóa 1 DB
