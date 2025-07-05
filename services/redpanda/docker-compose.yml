@@ -19,6 +19,8 @@ services:
       - --memory 1G
       - --mode dev-container
       - --default-log-level=info
+      - --set redpanda.enable_sasl=true
+      - --set redpanda.kafka_api[1].authentication_method=sasl
     ports:
       - "9223:9223"  # Kafka API (external)
       - "9092:9092"  # Kafka API (internal)

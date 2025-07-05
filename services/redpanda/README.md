@@ -239,6 +239,76 @@ curl http://localhost:9644/v1/status/ready
    - Kiểm tra quyền admin: `docker exec redpanda rpk acl list`
    - Tạo lại user admin nếu cần
 
+## SASL Authentication Configuration
+
+Redpanda is configured with SASL authentication enabled on the external port (9223).
+
+### Default Credentials
+- **Username**: `admin`
+- **Password**: `admin2k25`  
+- **Mechanism**: `SCRAM-SHA-256`
+
+### Port Configuration
+- **External Port**: `9223` - Requires SASL authentication
+- **Internal Port**: `9092` - No authentication (for internal services like Console)
+
+### Client Configuration Examples
+
+#### Java/Kafka Client Properties
+```properties
+bootstrap.servers=localhost:9223
+security.protocol=SASL_PLAINTEXT
+sasl.mechanism=SCRAM-SHA-256
+sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin2k25";
+```
+
+#### RPK Command Line
+```bash
+rpk topic list --brokers localhost:9223 --user admin --password admin2k25 --sasl-mechanism SCRAM-SHA-256
+```
+
+## Troubleshooting SASL Issues
+
+### Problem: "enabled mechanisms are []"
+This error indicates SASL is not properly enabled.
+
+**Solution:**
+1. Enable SASL in cluster config:
+   ```bash
+   docker exec redpanda rpk cluster config set enable_sasl true
+   ```
+
+2. Create admin user:
+   ```bash
+   docker exec redpanda rpk acl user create admin --password admin2k25 --mechanism SCRAM-SHA-256
+   ```
+
+3. Grant superuser privileges:
+   ```bash
+   docker exec redpanda rpk cluster config set superusers '[admin]'
+   ```
+
+### Problem: "TOPIC_AUTHORIZATION_FAILED"
+This means the user exists but lacks permissions.
+
+**Solution:**
+Add user to superusers list:
+```bash
+docker exec redpanda rpk cluster config set superusers '[admin]'
+```
+
+### Verification Commands
+```bash
+# Check if SASL is enabled
+docker exec redpanda rpk cluster config get enable_sasl
+
+# List users
+docker exec redpanda rpk acl user list
+
+# Test connection
+docker exec redpanda rpk topic create test --brokers localhost:9223 --user admin --password admin2k25 --sasl-mechanism SCRAM-SHA-256
+```
+
 ### ✅ **Redpanda Console đã hoạt động!**
 - **URL**: http://localhost:8080
 - **Kafka API**: localhost:9223

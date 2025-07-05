@@ -117,3 +117,14 @@ docker compose down
 ## Configuration
 
 Each service has its own configuration directory under `services/<service>/config/`. Modify these files to customize service behavior.
+
+## Quick Testing
+
+### Test All Services
+```bash
+# Test Redpanda SASL authentication
+./test-redpanda-sasl.sh
+
+# Check all service status
+docker compose ps
+```

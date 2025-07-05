@@ -12,5 +12,12 @@
     "auto.offset.reset": "earliest",
     "enable.auto.commit": "true",
     "topic": "gsht_topic_local_namtp"
+  },
+  "connection_instructions": {
+    "note": "Redpanda SASL Authentication is now ENABLED",
+    "external_port": "9223 (SASL required)",
+    "internal_port": "9092 (no SASL, only for internal services)",
+    "test_connection": "rpk topic create test --brokers localhost:9223 --user admin --password admin2k25 --sasl-mechanism SCRAM-SHA-256",
+    "web_console": "http://localhost:8080 (Redpanda Console)"
   }
 }
