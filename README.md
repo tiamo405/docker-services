@@ -99,6 +99,16 @@ docker compose down
 - Persistence enabled with AOF
 - Optimized for local development
 
+### Redpanda
+- Kafka API Port: 9223 (external), 9092 (internal)
+- Console UI: http://localhost:8080
+- Schema Registry: http://localhost:8084
+- Admin API: http://localhost:9644
+- SASL Authentication: SCRAM-SHA-256
+- Admin User: admin / admin2k25
+- Topic: gsht_topic_local_namtp
+- Consumer Group: gsht_group_local
+
 ### MinIO
 - Web UI: http://localhost:9001
 - API: http://localhost:9000

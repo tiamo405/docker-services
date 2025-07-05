@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:latest
+    container_name: redpanda
+    restart: unless-stopped
+    command:
+      - redpanda
+      - start
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:9223
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:9223
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:8083
+      - --advertise-pandaproxy-addr internal://redpanda:8082,external://localhost:8083
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:8084
+      - --rpc-addr redpanda:33145
+      - --advertise-rpc-addr redpanda:33145
+      - --smp 1
+      - --memory 1G
+      - --mode dev-container
+      - --default-log-level=info
+    ports:
+      - "9223:9223"  # Kafka API (external)
+      - "9092:9092"  # Kafka API (internal)
+      - "8083:8083"  # Pandaproxy (REST API)
+      - "8084:8084"  # Schema Registry
+      - "9644:9644"  # Admin API
+    volumes:
+      - ~/docker-services/data/redpanda:/var/lib/redpanda/data
+      - ./config:/etc/redpanda
+    environment:
+      - REDPANDA_ENVIRONMENT=development
+    networks:
+      - redpanda-network
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster info"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  redpanda-console:
+    image: docker.redpanda.com/redpandadata/console:latest
+    container_name: redpanda-console
+    restart: unless-stopped
+    entrypoint: /bin/sh
+    command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["redpanda:9092"]
+          schemaRegistry:
+            enabled: true
+            urls: ["http://redpanda:8081"]
+        redpanda:
+          adminApi:
+            enabled: true
+            urls: ["http://redpanda:9644"]
+        connect:
+          enabled: false
+    ports:
+      - "8080:8080"  # Console Web UI
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    networks:
+      - redpanda-network
+
+networks:
+  redpanda-network:
+    driver: bridge

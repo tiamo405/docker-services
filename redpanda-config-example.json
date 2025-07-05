@@ -1,0 +1,16 @@
+{
+  "redpanda": {
+    "bootstrap.servers": "localhost:9223",
+    "key.serializer": "org.apache.kafka.common.serialization.StringSerializer",
+    "value.serializer": "org.apache.kafka.common.serialization.StringSerializer",
+    "key.deserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+    "value.deserializer": "org.apache.kafka.common.serialization.StringDeserializer",
+    "security.protocol": "SASL_PLAINTEXT",
+    "sasl.mechanism": "SCRAM-SHA-256",
+    "sasl.jaas.config": "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"admin\" password=\"admin2k25\";",
+    "group.id": "gsht_group_local",
+    "auto.offset.reset": "earliest",
+    "enable.auto.commit": "true",
+    "topic": "gsht_topic_local_namtp"
+  }
+}
