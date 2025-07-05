@@ -9,6 +9,29 @@ Redpanda là một streaming platform tương thích với Apache Kafka, đượ
 - **Mode**: Development Container
 - **Authentication**: SASL SCRAM-SHA-256
 
+## ✅ **Setup Hoàn Thành - Sẵn Sàng Sử Dụng!**
+
+### 🎯 **Redpanda & Console đã chạy thành công:**
+- **Redpanda**: ✅ Healthy và ready
+- **Console UI**: ✅ Hoạt động tại http://localhost:8080
+- **Kafka API**: ✅ Sẵn sàng tại localhost:9223
+
+### 🔧 **Các vấn đề đã được sửa:**
+1. **Permission denied**: Sử dụng Docker managed volume
+2. **Console config error**: Chuyển sang environment variables
+3. **Volume mapping conflicts**: Loại bỏ config file mapping
+
+### 🚀 **Bước tiếp theo:**
+```bash
+# Truy cập Console UI
+open http://localhost:8080
+
+# Hoặc test qua CLI
+docker exec redpanda rpk topic list
+```
+
+---
+
 ## 🚀 Khởi động nhanh
 
 ### 1. Khởi động services
@@ -202,14 +225,24 @@ curl http://localhost:9644/v1/status/ready
 1. **Console không load được**
    - Chờ Redpanda khởi động hoàn tất (15-20s)
    - Kiểm tra logs: `docker logs redpanda-console`
+   - **✅ FIXED**: Đã sửa cấu hình Console để sử dụng environment variables thay vì YAML config
 
-2. **SASL Authentication failed**
-   - Chạy lại setup: `./setup-sasl.sh`
+2. **Permission denied error khi khởi động**
+   - **✅ FIXED**: Sử dụng Docker managed volume thay vì bind mount
+   - Redpanda data được lưu trong volume `redpanda_redpanda-data`
+
+3. **SASL Authentication failed**
+   - Chạy lại setup: `./setup-sasl.sh`  
    - Kiểm tra user đã tạo: `docker exec redpanda rpk acl user list`
 
-3. **Topic không tạo được**
+4. **Topic không tạo được**
    - Kiểm tra quyền admin: `docker exec redpanda rpk acl list`
    - Tạo lại user admin nếu cần
+
+### ✅ **Redpanda Console đã hoạt động!**
+- **URL**: http://localhost:8080
+- **Kafka API**: localhost:9223
+- **Admin API**: localhost:9644
 
 ### Reset toàn bộ
 ```bash
