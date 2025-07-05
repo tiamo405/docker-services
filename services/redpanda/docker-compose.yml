@@ -1,64 +1,82 @@
-version: '3.8'
-
-services:
-  redpanda:
-    image: docker.redpanda.com/redpandadata/redpanda:latest
-    container_name: redpanda
-    restart: unless-stopped
-    command:
-      - redpanda
-      - start
-      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:9223
-      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:9223
-      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:8083
-      - --advertise-pandaproxy-addr internal://redpanda:8082,external://localhost:8083
-      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:8084
-      - --rpc-addr redpanda:33145
-      - --advertise-rpc-addr redpanda:33145
-      - --smp 1
-      - --memory 1G
-      - --mode dev-container
-      - --default-log-level=info
-      - --set redpanda.enable_sasl=true
-      - --set redpanda.kafka_api[1].authentication_method=sasl
-    ports:
-      - "9223:9223"  # Kafka API (external)
-      - "9092:9092"  # Kafka API (internal)
-      - "8083:8083"  # Pandaproxy (REST API)
-      - "8084:8084"  # Schema Registry
-      - "9644:9644"  # Admin API
-    volumes:
-      - redpanda-data:/var/lib/redpanda/data
-    environment:
-      - REDPANDA_ENVIRONMENT=development
-    networks:
-      - redpanda-network
-    healthcheck:
-      test: ["CMD-SHELL", "rpk cluster info"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-  redpanda-console:
-    image: docker.redpanda.com/redpandadata/console:latest
-    container_name: redpanda-console
-    restart: unless-stopped
-    environment:
-      KAFKA_BROKERS: redpanda:9092
-      REDPANDA_ADMIN_API_ENABLED: "true"
-      REDPANDA_ADMIN_API_URLS: http://redpanda:9644
-    ports:
-      - "8080:8080"  # Console Web UI
-    depends_on:
-      redpanda:
-        condition: service_healthy
-    networks:
-      - redpanda-network
+networks:
+  redpanda_network:
+    driver: bridge
 
 volumes:
   redpanda-data:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ~/docker-services/data/redpanda
 
-networks:
-  redpanda-network:
-    driver: bridge
+services:
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.1.13
+    container_name: redpanda-sasl
+    hostname: redpanda
+    networks:
+      - redpanda_network
+    ports:
+      - "9223:9092"    # Kafka API cho redpanda config  
+      - "9093:9093"    # Kafka API cho redpanda_logic config
+      - "8081:8081"    # Schema Registry
+      - "8083:8083"    # Pandaproxy (REST API)
+      - "9644:9644"    # Admin API
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data
+    environment:
+      - REDPANDA_ENVIRONMENT=development
+    command:
+      - redpanda
+      - start
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:9093
+      - --advertise-kafka-addr internal://192.168.1.66:9223,external://192.168.1.66:9093
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:8083
+      - --advertise-pandaproxy-addr internal://redpanda:8082,external://redpanda:8083
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:8084
+      - --rpc-addr redpanda:33145
+      - --advertise-rpc-addr redpanda:33145
+      - --mode=dev-container
+      - --smp=1
+      - --memory=1G
+      - --reserve-memory=0M
+      - --default-log-level=info
+      - --set redpanda.enable_sasl=true
+      - --set redpanda.kafka_api[0].authentication_method=sasl
+      - --set redpanda.kafka_api[1].authentication_method=sasl
+      - --set redpanda.superusers=["admin"]
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  console:
+    image: docker.redpanda.com/redpandadata/console:v2.6.1
+    container_name: redpanda-console
+    networks:
+      - redpanda_network
+    ports:
+      - "8080:8080"
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["redpanda:9092"]
+          sasl:
+            enabled: true
+            username: admin
+            password: admin2k25
+            mechanism: SCRAM-SHA-256
+        redpanda:
+          adminApi:
+            enabled: true
+            urls: ["http://redpanda:9644"]
+        server:
+          listenPort: 8080
+    entrypoint: /bin/sh
+    command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
+    depends_on:
+      redpanda:
+        condition: service_healthy
