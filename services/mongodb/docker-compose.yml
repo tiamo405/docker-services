@@ -6,14 +6,14 @@ services:
     container_name: mongodb
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: user
-      MONGO_INITDB_ROOT_PASSWORD: password
-      MONGO_INITDB_DATABASE: myapp
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
     ports:
       - "27017:27017"
     volumes:
       - ~/docker-services/data/mongodb:/data/db
       - ./config:/etc/mongo
+    command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
     networks:
       - mongodb-network
 
