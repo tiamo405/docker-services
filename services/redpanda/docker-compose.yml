@@ -14,12 +14,13 @@ services:
   redpanda:
     image: docker.redpanda.com/redpandadata/redpanda:v24.1.13
     container_name: redpanda-sasl
+    restart: unless-stopped
     hostname: redpanda
     networks:
       - redpanda_network
     ports:
-      - "9223:9092"    # Kafka API cho redpanda config  
-      - "9093:9093"    # Kafka API cho redpanda_logic config
+      - "9223:9223"    # Kafka API cho external access
+      - "9092:9092"    # Kafka API cho internal access  
       - "8081:8081"    # Schema Registry
       - "8083:8083"    # Pandaproxy (REST API)
       - "9644:9644"    # Admin API
@@ -27,11 +28,13 @@ services:
       - redpanda-data:/var/lib/redpanda/data
     environment:
       - REDPANDA_ENVIRONMENT=development
+      - HOST_IP=${HOST_IP:-localhost}
+
     command:
       - redpanda
       - start
-      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:9093
-      - --advertise-kafka-addr internal://192.168.1.66:9223,external://192.168.1.66:9093
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:9223
+      - --advertise-kafka-addr internal://redpanda:9092,external://${HOST_IP:-localhost}:9223
       - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:8083
       - --advertise-pandaproxy-addr internal://redpanda:8082,external://redpanda:8083
       - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:8084
@@ -52,31 +55,50 @@ services:
       timeout: 10s
       retries: 5
 
+  # console:
+  #   image: docker.redpanda.com/redpandadata/console:v2.6.1
+  #   container_name: redpanda-console
+  #   restart: unless-stopped
+  #   networks:
+  #     - redpanda_network
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     CONFIG_FILEPATH: /tmp/config.yml
+  #     CONSOLE_CONFIG_FILE: |
+  #       kafka:
+  #         brokers: ["redpanda:9092"]
+  #         sasl:
+  #           enabled: true
+  #           username: admin
+  #           password: admin2k25
+  #           mechanism: SCRAM-SHA-256
+  #       redpanda:
+  #         adminApi:
+  #           enabled: true
+  #           urls: ["http://redpanda:9644"]
+  #       server:
+  #         listenPort: 8080
+  #   entrypoint: /bin/sh
+  #   command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
+  #   depends_on:
+  #     redpanda:
+  #       condition: service_healthy
+
+
   console:
     image: docker.redpanda.com/redpandadata/console:v2.6.1
     container_name: redpanda-console
+    restart: unless-stopped
     networks:
       - redpanda_network
     ports:
       - "8080:8080"
+    volumes:
+      - ./config/console-config.yml:/etc/console-config.yml:ro
     environment:
-      CONFIG_FILEPATH: /tmp/config.yml
-      CONSOLE_CONFIG_FILE: |
-        kafka:
-          brokers: ["redpanda:9092"]
-          sasl:
-            enabled: true
-            username: admin
-            password: admin2k25
-            mechanism: SCRAM-SHA-256
-        redpanda:
-          adminApi:
-            enabled: true
-            urls: ["http://redpanda:9644"]
-        server:
-          listenPort: 8080
-    entrypoint: /bin/sh
-    command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
+      CONFIG_FILEPATH: /etc/console-config.yml
+    command: /app/console
     depends_on:
       redpanda:
         condition: service_healthy

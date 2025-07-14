@@ -1,0 +1,15 @@
+kafka:
+  brokers: ["redpanda:9092"]
+  sasl:
+    enabled: true
+    username: admin
+    password: admin2k25
+    mechanism: SCRAM-SHA-256
+
+redpanda:
+  adminApi:
+    enabled: true
+    urls: ["http://redpanda:9644"]
+
+server:
+  listenPort: 8080

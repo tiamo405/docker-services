@@ -36,9 +36,11 @@ docker compose ps
 
 ### 3. Setup SASL Authentication
 ```bash
-# Tạo SASL user và topics
-chmod +x setup-sasl.sh
-./setup-sasl.sh
+# Tạo SASL
+docker exec redpanda-sasl rpk acl user create admin --password admin2k25 --api-urls localhost:9644
+# # Tạo SASL user và topics
+# chmod +x setup-sasl.sh
+# ./setup-sasl.sh
 ```
 
 ### 4. Restart Console service (nếu cần)
