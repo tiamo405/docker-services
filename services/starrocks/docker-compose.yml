@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  starrocks:
+    image: starrocks/allin1-ubuntu:latest
+    container_name: starrocks
+    restart: unless-stopped
+    environment:
+      - MYSQL_PWD=
+      - STARROCKS_ROOT_PASSWORD=root
+    ports:
+      - "9030:9030"   # MySQL protocol port
+      - "8030:8030"   # HTTP port for FE
+      - "8040:8040"   # HTTP port for BE
+      - "9020:9020"   # RPC port for FE
+      - "9050:9050"   # Heartbeat service port for BE
+      - "8060:8060"   # Brpc port for BE
+    volumes:
+      - ../../data/starrocks/fe:/data/deploy/starrocks/fe/meta
+      - ../../data/starrocks/be:/data/deploy/starrocks/be/storage
+      - ./config/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - starrocks-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -h 127.0.0.1 -P 9030 -u root -proot -e 'SELECT 1' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+networks:
+  starrocks-network:
+    driver: bridge
