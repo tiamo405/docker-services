@@ -13,7 +13,7 @@ done
 echo "StarRocks is ready! Running initialization script..."
 
 # Run the initialization SQL
-mysql -h 127.0.0.1 -P 9030 -u root --protocol=TCP < /home/namtp/docker-services/services/starrocks/config/init.sql
+mysql -h 127.0.0.1 -P 9030 -u root --protocol=TCP < ~/docker-services/services/starrocks/config/init.sql
 
 echo "StarRocks initialization completed!"
 echo "You can now connect to StarRocks using:"

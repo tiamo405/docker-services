@@ -1,0 +1,7 @@
+{
+  "eula": true,
+  "settings": {
+    "analytics": false,
+    "logLevel": "info"
+  }
+}

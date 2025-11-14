@@ -78,6 +78,11 @@ sudo systemctl enable docker
 print_status "Adding user '$USER' to docker group..."
 sudo usermod -aG docker $USER
 
+# Apply group changes immediately (optional - requires new shell)
+print_status "Applying group changes for current session..."
+print_warning "Running 'newgrp docker' to apply group changes immediately..."
+print_warning "Note: This will start a new shell session with docker group access."
+
 # Get latest Docker Compose version
 print_status "Getting latest Docker Compose version..."
 COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
@@ -115,12 +120,17 @@ print_status "Docker Compose version:"
 docker-compose --version
 
 echo ""
-print_warning "IMPORTANT: You need to log out and log back in (or restart your system)"
-print_warning "for the group membership changes to take effect."
-print_warning "After that, you can run Docker commands without sudo."
+print_warning "IMPORTANT: Choose one of the following options:"
+print_warning "Option 1: Run 'newgrp docker' now to apply group changes immediately"
+print_warning "Option 2: Log out and log back in (or restart your system)"
+print_warning "After either option, you can run Docker commands without sudo."
 
 echo ""
-print_status "To test Docker without sudo after relogin, run:"
+print_status "To apply group changes immediately, run:"
+echo "  newgrp docker"
+
+echo ""
+print_status "To test Docker without sudo after applying group changes, run:"
 echo "  docker run hello-world"
 
 echo ""

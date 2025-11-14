@@ -1,0 +1,8 @@
+services:
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    restart: unless-stopped
+    ports:
+      - "5540:5540"
+    # Tạm thời không dùng environment, không mount volume
