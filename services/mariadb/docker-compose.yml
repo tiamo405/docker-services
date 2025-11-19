@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:10.3.39
+    container_name: mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpassword
+      MARIADB_DATABASE: quanlyluhanhdb
+      MARIADB_USER: quanlyluhanhdb
+      MARIADB_PASSWORD: "9r0~1Mo2z@#"
+      MARIADB_CHARACTER_SET_SERVER: utf8mb4
+      MARIADB_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"  # Using 3307 to avoid conflict with MySQL service on 3306
+    volumes:
+      - /home/namtp/docker-services/data/mariadb:/var/lib/mysql
+      - ./config/my.cnf:/etc/mysql/conf.d/my.cnf:ro
+      # - ./config/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - mariadb-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "quanlyluhanhdb", "-p9r0~1Mo2z@#"]
+      timeout: 20s
+      retries: 10
+      start_period: 40s
+      interval: 30s
+
+networks:
+  mariadb-network:
+    driver: bridge

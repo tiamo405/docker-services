@@ -7,7 +7,9 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: myapp
+      MYSQL_DATABASE: quanlyluhanhdb
+      MYSQL_USER: "quanlyluhanhdb"
+      MYSQL_PASSWORD: "9r0~1Mo2z@#"
     ports:
       - "3306:3306"
     volumes:

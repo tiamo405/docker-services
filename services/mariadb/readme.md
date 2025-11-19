@@ -1,0 +1,1 @@
+docker exec -i mariadb mysql -u quanlyluhanhdb -p'9r0~1Mo2z@#' quanlyluhanhdb < /home/namtp/docker-services/quanlyluhanhdb_2025-11-17_22-52-02.sql
