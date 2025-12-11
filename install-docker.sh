@@ -78,6 +78,9 @@ sudo systemctl enable docker
 print_status "Adding user '$USER' to docker group..."
 sudo usermod -aG docker $USER
 
+# reload lai docker de current session co docker group access
+newgrp docker
+
 # Apply group changes immediately (optional - requires new shell)
 print_status "Applying group changes for current session..."
 print_warning "Running 'newgrp docker' to apply group changes immediately..."
