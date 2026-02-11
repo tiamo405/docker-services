@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  faiss:
+    build: .
+    container_name: faiss-service
+    ports:
+      - "8001:8000"
+    volumes:
+      - ~/docker-services/data/faiss:/app/data
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
